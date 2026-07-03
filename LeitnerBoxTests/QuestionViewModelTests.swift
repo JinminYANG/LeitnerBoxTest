@@ -12,7 +12,7 @@
     var viewModel: QuestionViewModel!
 
     override func setUp() {
-        let leitner = ManagedObjectContextInstance.instance.leitners.first!
+        let leitner = ManagedObjectContextInstance.instance.prepare().leitners.first!
         let viewContext = PersistenceController.shared.viewContext
         viewModel = QuestionViewModel(viewContext: viewContext, leitner: leitner)
     }

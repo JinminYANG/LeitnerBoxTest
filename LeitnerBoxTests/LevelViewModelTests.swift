@@ -13,7 +13,7 @@ final class LevelViewModelTests: XCTestCase {
     var context = PersistenceController.shared.viewContext
 
     override func setUp() {
-        let leitners = ManagedObjectContextInstance.instance.leitners
+        let leitners = ManagedObjectContextInstance.instance.prepare().leitners
         viewModel = LevelsViewModel(viewContext: context, leitner: leitners.first!)
     }
 

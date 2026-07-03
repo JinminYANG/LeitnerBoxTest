@@ -14,7 +14,7 @@ final class ReviewViewModelTests: XCTestCase {
     var mockContext: MockNSManagedObjectContext! = .init()
 
     override func setUp() {
-        let leitner = ManagedObjectContextInstance.instance.leitners.first!
+        let leitner = ManagedObjectContextInstance.instance.prepare().leitners.first!
         let level = LevelsViewModel(viewContext: PersistenceController.shared.viewContext, leitner: leitner).levels.first(where: { $0.level.level == 1 })!
         let mockSpeech = MockAVSpeechSynthesisVoice()
         let synthesizer = MockAVSpeechSynthesizer()

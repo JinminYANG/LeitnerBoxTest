@@ -17,7 +17,7 @@ final class SearchViewModelTests: XCTestCase {
         let mockSpeach = MockAVSpeechSynthesisVoice()
         let mockSynthesizer = MockAVSpeechSynthesizer()
         viewModel = SearchViewModel(viewContext: PersistenceController.shared.viewContext,
-                                    leitner: ManagedObjectContextInstance.instance.leitners.first!,
+                                    leitner: ManagedObjectContextInstance.instance.prepare().leitners.first!,
                                     voiceSpeech: mockSpeach,
                                     synthesizer: mockSynthesizer)
     }

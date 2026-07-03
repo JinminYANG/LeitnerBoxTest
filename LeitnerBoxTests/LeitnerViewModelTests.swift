@@ -14,7 +14,7 @@ final class LeitnerViewModelTests: XCTestCase {
     var mockContext: MockNSManagedObjectContext = .init()
 
     override func setUp() {
-        _ = ManagedObjectContextInstance.instance
+        _ = ManagedObjectContextInstance.instance.prepare()
         viewModel = LeitnerViewModel(viewContext: context)
     }
 
