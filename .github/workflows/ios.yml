@@ -5,18 +5,44 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   build:
     name: Build and Test Unit Tests
-    runs-on: macos-latest
+    runs-on: macos-15
     env:
       IS_CONTINUOUS_INTEGRATION: 1
     steps:
-    - uses: actions/checkout@v3
-    - name: Select Xcode
-      run: sudo xcode-select -switch /Applications/Xcode_14.2.app && /usr/bin/xcodebuild -version
-    - name: Run Simulator
-      run: open -a Simulator --args -CurrentDeviceUDID 'iPhone 14' | sleep 15
+    - uses: actions/checkout@v5
+    - name: Show Xcode Version
+      run: /usr/bin/xcodebuild -version
+    - name: Select Available Simulator
+      shell: bash
+      run: |
+        set -euo pipefail
+        SIMULATOR_NAME="$(xcrun simctl list devices available iOS | grep -Eo 'iPhone[^()]+' | head -n 1 | xargs)"
+        if [[ -z "${SIMULATOR_NAME}" ]]; then
+          echo "No available iOS simulator found on the runner."
+          xcrun simctl list devices available
+          exit 1
+        fi
+
+        echo "Using simulator: ${SIMULATOR_NAME}"
+        echo "SIMULATOR_NAME=${SIMULATOR_NAME}" >> "${GITHUB_ENV}"
     - name: Run Unit Tests
-      run: xcodebuild clean CODE_SIGN_IDENTITY="" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_REQUIRED="NO" CODE_SIGNING_ALLOWED="NO" test -project LeitnerBox.xcodeproj -scheme LeitnerBox -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -only-testing:LeitnerBoxTests IS_CONTINUOUS_INTEGRATION=$IS_CONTINUOUS_INTEGRATION | xcpretty && exit ${PIPESTATUS[0]}
+      shell: bash
+      run: |
+        set -euo pipefail
+        xcodebuild clean \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGN_ENTITLEMENTS="" \
+          CODE_SIGNING_REQUIRED="NO" \
+          CODE_SIGNING_ALLOWED="NO" \
+          test \
+          -project LeitnerBox.xcodeproj \
+          -scheme LeitnerBox \
+          -sdk iphonesimulator \
+          -destination "platform=iOS Simulator,name=${SIMULATOR_NAME}" \
+          -only-testing:LeitnerBoxTests \
+          IS_CONTINUOUS_INTEGRATION="${IS_CONTINUOUS_INTEGRATION}"
